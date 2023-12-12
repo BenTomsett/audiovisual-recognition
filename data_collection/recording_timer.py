@@ -1,3 +1,7 @@
+# recording_time.py
+# GUI to assist with collecting videos for training/testing
+# Author: Ben Tomsett
+
 import random
 import threading
 import time

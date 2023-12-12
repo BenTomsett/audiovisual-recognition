@@ -3,7 +3,6 @@
 # Author: Ben Tomsett
 
 import numpy as np
-import soundfile
 from scipy.fft import dct
 
 
