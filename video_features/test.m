@@ -1,0 +1,1 @@
+computeAllDctCoefficients('../videos_scaled')
