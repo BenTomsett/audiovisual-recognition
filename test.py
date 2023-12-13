@@ -6,9 +6,9 @@ print("Starting MATLAB Engine...", end="")
 eng = matlab.engine.start_matlab()
 print(" done.")
 
-eng.cd(r'video_features', nargout=0)
+eng.cd(r"video_features/no_blocks", nargout=0)
 
-folder_path = Path('./videos_cropped').absolute().as_posix()
+folder_path = Path("./videos_cropped").absolute().as_posix()
 
 start_time = time.time()
 

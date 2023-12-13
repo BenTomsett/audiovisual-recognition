@@ -1,6 +1,6 @@
 function computeDctCoefficients(videoPath, outputName)
     % computeDCTCoefficients Given an input video path, calculates the DCT
-    % for each frame of the video and stores these coefficients to a file
+    % in 8x8 blocks for each frame of the video and stores these coefficients to a file
 
     v = VideoReader(videoPath);
     firstFrame = readFrame(v);
@@ -9,8 +9,11 @@ function computeDctCoefficients(videoPath, outputName)
         firstFrame = rgb2gray(firstFrame);
     end
 
-    numCoeffs = numel(dct2(firstFrame));
-    dctCoeffs = zeros(30, numCoeffs, 'single'); % use single precision
+    [height, width] = size(firstFrame);
+    numBlocksH = ceil(height / 8);
+    numBlocksW = ceil(width / 8);
+
+    dctCoeffs = zeros(30, numBlocksH * 8, numBlocksW * 8, 'single'); % Adjusted size for 8x8 blocks
 
     v = VideoReader(videoPath);
 
@@ -21,12 +24,32 @@ function computeDctCoefficients(videoPath, outputName)
             frame = rgb2gray(frame);
         end
 
-        dctFrame = dct2(frame);
+        dctFrame = zeros(size(frame), 'single');
 
-        dctCoeffs(frameCount, :) = single(dctFrame(:)');
+        % Process each 8x8 block
+        for i = 1:numBlocksH
+            for j = 1:numBlocksW
+                rowStart = (i-1)*8 + 1;
+                rowEnd = min(i*8, height);
+                colStart = (j-1)*8 + 1;
+                colEnd = min(j*8, width);
+
+                block = frame(rowStart:rowEnd, colStart:colEnd);
+                dctBlock = dct2(block);
+
+                % Zero out elements not in the upper left triangle
+                dctBlock = fliplr(dctBlock);
+                dctBlock = triu(dctBlock);
+                dctBlock = fliplr(dctBlock);
+
+                dctFrame(rowStart:rowEnd, colStart:colEnd) = dctBlock;
+            end
+        end
+
+        dctCoeffs(frameCount, :, :) = single(dctFrame);
     end
 
-    tensorInput = reshape(dctCoeffs, [30, size(firstFrame, 1), size(firstFrame, 2), 1]);
+    tensorInput = reshape(dctCoeffs, [30, numBlocksH * 8, numBlocksW * 8, 1]);
 
     split_string = strsplit(outputName, '_');
     outputDir = 'testing';

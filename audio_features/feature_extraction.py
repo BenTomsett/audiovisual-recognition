@@ -127,7 +127,7 @@ def log_signal(signal):
     :param signal: The signal to be logged
     :return: The logged signal
     """
-    return np.log10(signal)
+    return np.log10(signal + 1e-6)
 
 
 def dct_signal(signal):
